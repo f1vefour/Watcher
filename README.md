@@ -1,6 +1,6 @@
 # watcher (C port)
 
-C port of https://github.com/f1vefour/Watcher/blob/master/watcher.py using
+C port of https://github.com/splitbrain/Watcher/blob/master/watcher.py using
 only the C standard library plus glibc's POSIX/Linux headers (no third-party
 libraries -- `sys/inotify.h` in place of `pyinotify`).
 
