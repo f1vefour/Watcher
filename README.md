@@ -1,52 +1,25 @@
-# About Watcher
+# watcher (C port)
 
-Watcher is a daemon that watches specified files/folders for changes and
-fires commands in response to those changes. It is similar to
-[incron](http://incron.aiken.cz), however, configuration uses a simpler
-to read ini file instead of a plain text file. Unlike incron it can also
-recursively monitor directories.
+C port of https://github.com/f1vefour/Watcher/blob/master/watcher.py using
+only the C standard library plus glibc's POSIX/Linux headers (no third-party
+libraries -- `sys/inotify.h` in place of `pyinotify`).
 
-It's written in Python, making it easier to hack.
+## Build
 
-## Requirements
+    gcc -O2 -Wall -Wextra -std=c11 -D_GNU_SOURCE -o watcher watcher.c
 
-You need Python 2.7 and the [pyinotify](http://github.com/seb-m/pyinotify)
-library.
+## Usage
 
-In Ubuntu (and Debian) you can install these with:
+    ./watcher [-c /path/to/watcher.ini] {start|stop|restart|status|debug}
 
-    sudo apt-get install python python-pyinotify
+Default config search path (no `-c`): `/etc/watcher.ini`, then `~/.watcher.ini`.
 
-## Configuration
+See `watcher.ini` for the config format and config folder for examples -- same keys 
+as the Python original: `watch`, `events`, `recursive`, `autoadd`, `excluded`, `command`,
+plus `logfile`/`pidfile` in `[DEFAULT]`.
 
-See the provided `watcher.ini` file for an example job configuration. The
-config file should reside in `/etc/watcher.ini` or `~/.watcher.ini`. You
-can also specify the path to the config file as a command line parameter
-using the `--config` option.
+Command template variables: `$watched`, `$filename`, `$tflags`, `$nflags`,
+`$cookie` -- same as the original, shell-quoted the same way.
 
-If you edit the ini file you must restart the daemon for it to reload the
-configuration.
-
-## Starting the Daemon
-
-Make sure watcher.py is marked as executable:
-
-    chmod +x watcher.py
-
-
-Start the daemon with:
-
-    ./watcher.py start
-
-Stop it with:
-
-    ./watcher.py stop
-
-Restart it with:
-
-    ./watcher.py restart
-
-If you don't want the daemon to fork to the background, start it with
-
-    ./watcher.py debug
-
+Run `debug` mode first (foreground, no fork) to confirm your config works
+before using `start` to daemonize.
